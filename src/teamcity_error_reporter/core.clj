@@ -19,7 +19,7 @@
 
 (defn print-log-org-mode
   [log-parsed]
-  (doseq [{:keys [display-name stacktrace stdout artifact-href]} log-parsed
+  (doseq [{:keys [display-name message stacktrace stdout artifact-href]} log-parsed
           :let [artifact-file-name (when artifact-href
                                      (second (re-find #"/([^/]+$)" artifact-href)))
                 artifact-path (and artifact-file-name
@@ -34,8 +34,9 @@
         (io/copy in out)))
     (println
      (format
-      "* %s\n%s\n** stacktrace\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE\n** stdout\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE"
+      "* %s\n%s\n%s\n** stacktrace\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE\n** stdout\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE"
       display-name
+      message
       (if artifact-path
         (format "[[file:%s][screenshot]]"
                 artifact-path)
