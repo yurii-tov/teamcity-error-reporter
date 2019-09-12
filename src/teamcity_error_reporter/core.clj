@@ -20,19 +20,25 @@
 (defn print-log-org-mode
   [log-parsed]
   (doseq [{:keys [display-name stacktrace stdout artifact-href]} log-parsed
-          :let [artifact-file-name (second (re-find #"/([^/]+$)" artifact-href))
-                artifact-path (io/file (str (System/getenv "tmp")
-                                            "/"
-                                            (UUID/randomUUID))
-                                       artifact-file-name)]]
-    (io/make-parents artifact-path)
-    (with-open [in (io/input-stream artifact-href)
-                out (io/output-stream artifact-path)]
-      (io/copy in out))
+          :let [artifact-file-name (when artifact-href
+                                     (second (re-find #"/([^/]+$)" artifact-href)))
+                artifact-path (and artifact-file-name
+                                   (io/file (str (System/getenv "tmp")
+                                                 "/"
+                                                 (UUID/randomUUID))
+                                            artifact-file-name))]]
+    (when artifact-path
+      (io/make-parents artifact-path)
+      (with-open [in (io/input-stream artifact-href)
+                  out (io/output-stream artifact-path)]
+        (io/copy in out)))
     (println
      (format
-      "* %s\n[[file:%s][screenshot]]\n** stacktrace\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE\n** stdout\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE"
+      "* %s\n%s\n** stacktrace\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE\n** stdout\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE"
       display-name
-      artifact-path
+      (if artifact-path
+        (format "[[file:%s][screenshot]]"
+                artifact-path)
+        "no screenshots attached")
       stacktrace
       stdout))))
