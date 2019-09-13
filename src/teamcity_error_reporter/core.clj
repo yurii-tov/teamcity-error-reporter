@@ -45,7 +45,9 @@
       stdout))))
 
 
-(defn test-report []
+(defn demo
+  "Create report based on local example"
+  []
   (let [test-log-lines
         (with-open [r (io/reader "example.log")]
           (vec (line-seq r)))
@@ -55,10 +57,10 @@
 
 (defn -main
   "At this time, support only buildType argument, create report only for last build.
-  If pass :test, create test report based on local file"
+  If pass :demo, create test report based on local file"
   [& args]
-  (if (= (first args) ":test")
-    (test-report)
+  (if (= (first args) ":demo")
+    (demo)
     (print-log-org-mode
      (-> (get-build (first args))
          parse-log

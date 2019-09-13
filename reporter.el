@@ -12,4 +12,11 @@
                            '("lein" "run")
                            teamcity-test-report-args)
     (switch-to-buffer buffer)
-    (org-mode)))
+    (org-mode))))
+
+
+(defun make-teamcity-test-report-demo ()
+  (interactive)
+  (let ((teamcity-test-report-args '(":demo")))
+    (make-teamcity-test-report)))
+    
