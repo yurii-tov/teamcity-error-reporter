@@ -7,6 +7,9 @@
 
 
 (defn parse-log
+  "Fetch all resources related to given build (build log text file, artifacts info),
+  and produce structured view of test failures.
+  Argument: build - parsed xml structure obtained from teamcity api"
   [build]
   (let [artifacts (-> build
                       build-artifacts
@@ -18,6 +21,7 @@
 
 
 (defn print-log-org-mode
+  "Consume errors data, fetch artifacts, print org-mode document into stdout"
   [log-parsed]
   (doseq [{:keys [display-name message stacktrace stdout artifact-href]} log-parsed
           :let [artifact-file-name (when artifact-href
