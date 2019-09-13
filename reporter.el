@@ -8,11 +8,10 @@
     (make-process
      :buffer buffer
      :name "test-report"
-     :command (concatenate 'list
-                           '("lein" "run")
-                           teamcity-test-report-args)
-    (switch-to-buffer buffer)
-    (org-mode))))
+     :command (append '("lein" "run")
+                      teamcity-test-report-args)
+     (switch-to-buffer buffer)
+     (org-mode))))
 
 
 (defun make-teamcity-test-report-demo ()
