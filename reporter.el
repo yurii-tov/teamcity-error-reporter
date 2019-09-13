@@ -1,6 +1,6 @@
 (defun make-teamcity-test-report ()
   (interactive)
-  (let ((buffer "*selenium-test-report*"))
+  (let ((buffer "*test-report*"))
     (make-process
      :buffer buffer
      :name "test-report"
