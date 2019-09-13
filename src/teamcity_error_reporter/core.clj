@@ -34,7 +34,7 @@
         (io/copy in out)))
     (println
      (format
-      "* %s\n%s\n%s\n** stacktrace\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE\n** stdout\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE"
+      "* %s\n%s\n\n%s\n\n** stacktrace\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE\n** stdout\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE"
       display-name
       message
       (if artifact-path
@@ -43,3 +43,23 @@
         "no screenshots attached")
       stacktrace
       stdout))))
+
+
+(defn test-report []
+  (let [test-log-lines
+        (with-open [r (io/reader "example.log")]
+          (vec (line-seq r)))
+        test-errors (extract-errors test-log-lines {})]
+    (print-log-org-mode test-errors)))
+
+
+(defn -main
+  "At this time, support only buildType argument, create report only for last build.
+  If pass :test, create test report based on local file"
+  [& args]
+  (if (= (first args) ":test")
+    (test-report)
+    (print-log-org-mode
+     (-> (get-build (first args))
+         parse-log
+         print-log-org-mode))))
