@@ -1,5 +1,5 @@
-(setq teamcity-test-report-command
-      '("lein" "run" "e5_selenium"))
+(setq teamcity-test-report-args
+      '("e5_selenium"))
       
 
 (defun make-teamcity-test-report ()
@@ -8,6 +8,8 @@
     (make-process
      :buffer buffer
      :name "test-report"
-     :command teamcity-test-report-command)
+     :command (concatenate 'list
+                           '("lein" "run")
+                           teamcity-test-report-args)
     (switch-to-buffer buffer)
     (org-mode)))
