@@ -55,7 +55,12 @@
   (let [test-log-lines
         (with-open [r (io/reader "example.log")]
           (vec (line-seq r)))
-        test-errors (extract-errors test-log-lines {})]
+        test-errors (extract-errors
+                     test-log-lines
+                     (zipmap (map (fn [{:keys [stdout]}] (when stdout (extract-screenshot-name stdout)))
+                                  (extract-errors test-log-lines {}))
+                             (repeatedly (fn [] (format "https://picsum.photos/id/%d/200/300.jpg"
+                                                        (inc (rand-int 500)))))))]
     (print-log-org-mode test-errors)))
 
 
