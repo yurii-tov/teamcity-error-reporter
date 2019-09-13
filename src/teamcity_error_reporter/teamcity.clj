@@ -5,7 +5,7 @@
 
 
 (def ^:dynamic *teamcity-server*
-  "http://hati-tcity-srv1.solar.local")
+  (System/getenv "teamcity.server.url"))
 
 
 (defn teamcity-request
