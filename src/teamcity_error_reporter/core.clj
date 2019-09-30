@@ -23,30 +23,31 @@
 (defn print-log-org-mode
   "Consume errors data, fetch artifacts, print org-mode document into stdout"
   [log-parsed]
-  (doseq [{:keys [display-name message stacktrace stdout artifact-href]} log-parsed
-          :let [artifact-file-name (when artifact-href
-                                     (second (re-find #"/([^/]+$)" artifact-href)))
-                artifact-path (and artifact-file-name
-                                   (io/file (str (System/getenv "tmp")
-                                                 "/"
-                                                 (UUID/randomUUID))
-                                            artifact-file-name))]]
-    (when artifact-path
-      (io/make-parents artifact-path)
-      (with-open [in (io/input-stream artifact-href)
-                  out (io/output-stream artifact-path)]
-        (io/copy in out)))
-    (println
-     (format
-      "* %s\n** summary\n%s\n\n%s\n\n** stacktrace\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE\n** stdout\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE"
-      display-name
-      message
-      (if artifact-path
-        (format "[[file:%s][screenshot]]"
-                artifact-path)
-        "no screenshots attached")
-      stacktrace
-      stdout))))
+  (let [report-id (str (UUID/randomUUID))]
+    (doseq [{:keys [display-name message stacktrace stdout artifact-href]} log-parsed
+            :let [artifact-file-name (when artifact-href
+                                       (second (re-find #"/([^/]+$)" artifact-href)))
+                  artifact-path (and artifact-file-name
+                                     (io/file (str (System/getenv "tmp")
+                                                   "/"
+                                                   report-id)
+                                              artifact-file-name))]]
+            (when artifact-path
+              (io/make-parents artifact-path)
+              (with-open [in (io/input-stream artifact-href)
+                          out (io/output-stream artifact-path)]
+                (io/copy in out)))
+            (println
+             (format
+              "* %s\n** summary\n%s\n\n%s\n\n** stacktrace\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE\n** stdout\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE"
+              display-name
+              message
+              (if artifact-path
+                (format "[[file:%s][screenshot]]"
+                        artifact-path)
+                "no screenshots attached")
+              stacktrace
+              stdout)))))
 
 
 (defn demo
