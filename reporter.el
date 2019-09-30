@@ -1,21 +1,14 @@
-(setq teamcity-test-report-args
-      '("e5_selenium"))
-      
-
-(defun make-teamcity-test-report ()
-  (interactive)
+(defun make-teamcity-test-report (build-type-id)
+  (interactive "sbuildTypeId: ")
   (let ((buffer "*test-report*"))
     (make-process
      :buffer buffer
      :name "test-report"
-     :command (append '("lein" "run")
-                      teamcity-test-report-args)
+     :command (list "lein" "run" build-type-id))
      (switch-to-buffer buffer)
-     (org-mode))))
+     (org-mode)))
 
 
 (defun make-teamcity-test-report-demo ()
   (interactive)
-  (let ((teamcity-test-report-args '(":demo")))
-    (make-teamcity-test-report)))
-    
+  (make-teamcity-test-report ":demo"))

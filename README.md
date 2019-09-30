@@ -21,5 +21,4 @@ Tool to aid in selenium tests failures investigation. Fetches all necessary data
  Set env variable `teamcity.server.url` (for example: `http://my.teamcity.server`)
  
  1. load report.el file into emacs
- 2. Set variable `teamcity-test-report-args` to list like `'("selenium-tests-buildTypeId")` (You should specify your own value of course). This is an arguments for the tool
- 3. Execute `make-teamcity-test-report`
+ 2. Execute `make-teamcity-test-report`
