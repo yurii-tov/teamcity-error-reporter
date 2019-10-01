@@ -18,7 +18,7 @@
                         :message \"Only local connections are allowed\"}"
   [string]
   (let [[_ sign source message :as match]
-        (re-find #"^\[[^]]+](.):\s+?\[(.+)\]\s(.+)"
+        (re-find #"^\[[^]]+\](.):\s+?\[(.+?)\]\s(.+)"
                  string)]
     (when match
       {:type (message-type sign)
