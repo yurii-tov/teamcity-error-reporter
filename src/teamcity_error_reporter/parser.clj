@@ -1,5 +1,5 @@
 (ns teamcity-error-reporter.parser
-  "Extract selenium tests failures info from teamcity logfile"
+  "Teamcity build log parser"
   (:require [clojure.string :as cstr]
             [clojure.java.io :as io]))
 
