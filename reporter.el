@@ -1,10 +1,11 @@
-(defun make-teamcity-test-report (build-type-id)
-  (interactive "sbuildTypeId: ")
+(defun make-teamcity-test-report (args)
+  (interactive "sargs: ")
   (let ((buffer "*test-report*"))
     (make-process
      :buffer buffer
      :name "test-report"
-     :command (list "lein" "run" build-type-id))
+     :command (append '("lein" "run")
+                      (split-string args)))
      (switch-to-buffer buffer)
      (org-mode)))
 

@@ -22,3 +22,4 @@ Tool to aid in selenium tests failures investigation. Fetches all necessary data
  
  1. load report.el file into emacs
  2. Execute `make-teamcity-test-report`
+ 3. Pass args, buildTypeId and (optional) specific number or id, e.g. "e5_selenium", or "e5_selenium :number 42"

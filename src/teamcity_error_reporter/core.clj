@@ -3,7 +3,8 @@
   (:require (teamcity-error-reporter
              [parser :refer :all]
              [teamcity :refer :all])
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [clojure.string :as cstr]))
 
 
 (defn parse-log
@@ -72,6 +73,10 @@
   (if (= (first args) ":demo")
     (demo)
     (print-log-org-mode
-     (-> (get-build (first args))
+     (-> (apply get-build
+                (map (fn [a] (if (cstr/starts-with? a ":")
+                               (read-string a)
+                               a))
+                     args))
          parse-log
          print-log-org-mode))))
