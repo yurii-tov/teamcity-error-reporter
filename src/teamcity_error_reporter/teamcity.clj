@@ -41,6 +41,17 @@
           :else (first (builds build-type-id)))))
 
 
+(defn build-properties
+  "Extract some properties of given build, e.g. id, number, status message"
+  [{{:keys [webUrl id buildTypeId number]} :attrs
+    [{[text] :content}] :content}]
+  {:url webUrl
+   :status text
+   :id id
+   :build-type-id buildTypeId
+   :number number})
+
+
 ;; artifacts
 
 
