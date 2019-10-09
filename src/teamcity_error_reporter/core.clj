@@ -24,7 +24,7 @@
      :errors errors}))
 
 
-(defn print-log-org-mode
+(defn gen-report-org-mode
   "Consume parsed-log output, fetch artifacts, print org-mode document into stdout"
   [{{:keys [url number build-type-id status]} :properties errors :errors}]
   ;; properties
@@ -74,7 +74,7 @@
                                   (extract-errors test-log-lines {}))
                              (repeatedly (fn [] (format "https://picsum.photos/id/%d/200/300.jpg"
                                                         (inc (rand-int 500)))))))]
-    (print-log-org-mode
+    (gen-report-org-mode
      {:errors test-errors
       :properties {:url
                    "http://example.teamcity.server/viewLog.html?buildId=27749&buildTypeId=e5_selenium",
@@ -96,4 +96,4 @@
                               a))
                     args))
         parse-log
-        print-log-org-mode)))
+        gen-report-org-mode)))
