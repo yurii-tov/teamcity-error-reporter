@@ -55,7 +55,7 @@
               (io/copy in out)))
           (print
            (format
-            "* %s\n** summary\n%s\n\n%s\n\n** stacktrace\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE\n** stdout\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE\n"
+            "* %s\n** summary\n%s\n\n%s\n\n** stacktrace\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE%s\n"
             display-name
             message
             (if artifact-path
@@ -63,7 +63,8 @@
                       artifact-file-name)
               "no screenshots attached")
             stacktrace
-            stdout)))))
+            (str (when stdout
+                   (format "\n** stdout\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE" stdout))))))))
     ;; write path to report to stdout
     (println (cstr/replace (.getAbsolutePath report-file) "\\" "/"))))
                            
