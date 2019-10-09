@@ -25,41 +25,48 @@
 
 
 (defn gen-report-org-mode
-  "Consume parsed-log output, fetch artifacts, print org-mode document into stdout"
+  "Consume parsed-log output, fetch artifacts, print org-mode document into file"
   [{{:keys [url number build-type-id status]} :properties errors :errors}]
-  ;; properties
-  (println                              
-   (format "#+TITLE:%s %s\n\n%s\n\n%s\n"
-           build-type-id                
-           number                       
-           status                       
-           url))                        
-  ;; errors
-  (let [report-id (str (UUID/randomUUID))]
-    (doseq [{:keys [display-name message stacktrace stdout artifact-href]} errors
-            :let [artifact-file-name (when artifact-href
-                                       (second (re-find #"/([^/]+$)" artifact-href)))
-                  artifact-path (and artifact-file-name
-                                     (io/file (str (System/getenv "tmp")
-                                                   "/"
-                                                   report-id)
-                                              artifact-file-name))]]
-      (when artifact-path
-        (io/make-parents artifact-path)
-        (with-open [in (io/input-stream artifact-href)
-                    out (io/output-stream artifact-path)]
-          (io/copy in out)))
-      (println
-       (format
-        "* %s\n** summary\n%s\n\n%s\n\n** stacktrace\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE\n** stdout\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE"
-        display-name
-        message
-        (if artifact-path
-          (format "[[file:%s][screenshot]]"
-                  artifact-path)
-          "no screenshots attached")
-        stacktrace
-        stdout)))))
+  (let [report-id (str (UUID/randomUUID))
+        report-dir (str (System/getenv "tmp") "/" report-id)
+        report-file (io/file report-dir "test-report.org")]
+    ;; create report directory
+    (io/make-parents report-file)
+    ;; write report
+    (with-open [w (io/writer report-file)]
+      (binding [*out* w]
+        ;; properties
+        (print                              
+         (format "#+TITLE:%s %s\n\n%s\n\n%s\n\n"
+                 build-type-id                
+                 number                       
+                 status                       
+                 url))                        
+        ;; errors
+        (doseq [{:keys [display-name message stacktrace stdout artifact-href]} errors
+                :let [artifact-file-name (when artifact-href
+                                           (second (re-find #"/([^/]+$)" artifact-href)))
+                      artifact-path (and artifact-file-name
+                                         (io/file report-dir
+                                                  artifact-file-name))]]
+          (when artifact-path
+            (with-open [in (io/input-stream artifact-href)
+                        out (io/output-stream artifact-path)]
+              (io/copy in out)))
+          (print
+           (format
+            "* %s\n** summary\n%s\n\n%s\n\n** stacktrace\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE\n** stdout\n#+BEGIN_EXAMPLE\n%s#+END_EXAMPLE\n"
+            display-name
+            message
+            (if artifact-path
+              (format "[[file:%s][screenshot]]"
+                      artifact-file-name)
+              "no screenshots attached")
+            stacktrace
+            stdout)))))
+    ;; write path to report to stdout
+    (println (cstr/replace (.getAbsolutePath report-file) "\\" "/"))))
+                           
 
 
 (defn demo

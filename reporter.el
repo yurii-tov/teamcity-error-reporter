@@ -1,14 +1,12 @@
 (defun make-teamcity-test-report (args)
   (interactive "sargs: ")
-  (let ((buffer "*test-report*"))
-    (make-process
-     :buffer buffer
-     :name "test-report"
-     :command (append '("lein" "run")
-                      (split-string args)))
-     (switch-to-buffer buffer)
-     (org-mode)))
-
+  (let* ((command (string-join (append '("lein" "run")
+                                       (split-string args))
+                               " "))
+         (report-path (string-trim-right
+                       (shell-command-to-string command))))
+    (find-file report-path)))
+  
 
 (defun make-teamcity-test-report-demo ()
   (interactive)
