@@ -1,5 +1,6 @@
 (ns teamcity-error-reporter.core
-  (:import java.util.UUID)
+  (:import java.time.LocalDateTime
+           java.time.format.DateTimeFormatter)
   (:require (teamcity-error-reporter
              [parser :refer :all]
              [teamcity :refer :all])
@@ -27,7 +28,9 @@
 (defn gen-report-org-mode
   "Consume parsed-log output, fetch artifacts, print org-mode document into file"
   [{{:keys [url number build-type-id status]} :properties errors :errors}]
-  (let [report-id (str (UUID/randomUUID))
+  (let [report-id (let [d (LocalDateTime/now)
+                        f (DateTimeFormatter/ofPattern "yyyyMMdd_HHmmss")]
+                    (.format d f))
         report-dir (str (System/getenv "tmp") "/" report-id)
         report-file (io/file report-dir "test-report.org")]
     ;; create report directory
