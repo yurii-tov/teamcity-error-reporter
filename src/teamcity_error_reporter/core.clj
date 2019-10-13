@@ -40,7 +40,7 @@
       (binding [*out* w]
         ;; properties
         (print                              
-         (format "#+TITLE:%s %s\n\n%s\n\n%s\n\n"
+         (format "#+TITLE:%s %s\n#+TODO: WTF FLAKY BUG | FIXED KNOWN\n\n%s\n\n%s\n\n"
                  build-type-id                
                  number                       
                  status                       
