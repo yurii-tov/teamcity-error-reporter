@@ -83,8 +83,9 @@
                      test-log-lines
                      (zipmap (map (fn [{:keys [stdout]}] (when stdout (extract-screenshot-name stdout)))
                                   (extract-errors test-log-lines {}))
-                             (repeatedly (fn [] (format "https://picsum.photos/id/%d/200/300.jpg"
-                                                        (inc (rand-int 500)))))))]
+                             (repeatedly (fn [] (let [pic-id (inc (rand-int 500))]
+                                                  (format "https://picsum.photos/id/%d/200/%d.jpg"
+                                                          pic-id pic-id))))))]
     (gen-report-org-mode
      {:errors test-errors
       :properties {:url
