@@ -1,3 +1,5 @@
+(eval-when-compile (require 'subr-x))
+
 (defun make-teamcity-test-report (args)
   (interactive "sargs: ")
   (let* ((command (string-join (append '("lein" "run")
