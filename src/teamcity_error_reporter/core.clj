@@ -1,6 +1,7 @@
 (ns teamcity-error-reporter.core
   (:import java.time.LocalDateTime
-           java.time.format.DateTimeFormatter)
+           java.time.format.DateTimeFormatter
+           java.time.OffsetDateTime)
   (:require (teamcity-error-reporter
              [parser :refer :all]
              [teamcity :refer :all])
@@ -27,12 +28,14 @@
 
 (defn gen-report-org-mode
   "Consume parsed-log output, fetch artifacts, print org-mode document into file"
-  [{{:keys [url number build-type-id status]} :properties errors :errors}]
+  [{{:keys [url number build-type-id status date-finish]} :properties errors :errors}]
   (let [report-id (let [d (LocalDateTime/now)
                         f (DateTimeFormatter/ofPattern "yyyyMMdd_HHmmss")]
                     (.format d f))
         report-dir (str (System/getenv "tmp") "/" report-id)
-        report-file (io/file report-dir "test-report.org")]
+        report-file (io/file report-dir "test-report.org")
+        date-finish (.format date-finish
+                             (DateTimeFormatter/ofPattern "dd-MM-yyyy HH:mm:ss"))]
     ;; create report directory
     (io/make-parents report-file)
     ;; write report
@@ -40,9 +43,10 @@
       (binding [*out* w]
         ;; properties
         (print                              
-         (format "#+TITLE:%s %s\n#+TODO: WTF FLAKY BUG | FIXED KNOWN\n\n%s\n\n%s\n\n"
+         (format "#+TITLE:%s %s\n#+TODO: WTF FLAKY BUG | FIXED KNOWN\n\nFinish date: %s\n\n%s\n\n%s\n\n"
                  build-type-id                
-                 number                       
+                 number
+                 date-finish
                  status                       
                  url))                        
         ;; errors
@@ -90,6 +94,7 @@
      {:errors test-errors
       :properties {:url
                    "http://example.teamcity.server/viewLog.html?buildId=27749&buildTypeId=e5_selenium",
+                   :date-finish (OffsetDateTime/now)
                    :status "Tests failed: 4 (1 new), passed: 535, ignored: 1",
                    :id "27749",
                    :build-type-id "e5_selenium",
