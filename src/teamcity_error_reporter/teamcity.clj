@@ -1,7 +1,9 @@
 (ns teamcity-error-reporter.teamcity
   "Interaction with Teamcity server"
   (:require [clojure.xml :as xml]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io])
+  (:import java.time.OffsetDateTime
+           java.time.format.DateTimeFormatter))
 
 
 (def ^:dynamic *teamcity-server*
@@ -44,12 +46,18 @@
 (defn build-properties
   "Extract some properties of given build, e.g. id, number, status message"
   [{{:keys [webUrl id buildTypeId number]} :attrs
-    [{[text] :content}] :content}]
-  {:url webUrl
-   :status text
-   :id id
-   :build-type-id buildTypeId
-   :number number})
+    :as build}]
+  (let [{content :content} build
+        [{[text] :content}] content
+        {[date-finish] :content} (nth content 4)]
+    {:url webUrl
+     :status text
+     :id id
+     :build-type-id buildTypeId
+     :date-finish (OffsetDateTime/parse
+                   date-finish
+                   (DateTimeFormatter/ofPattern "yyyyMMdd'T'HHmmssZ"))
+     :number number}))
 
 
 ;; artifacts
