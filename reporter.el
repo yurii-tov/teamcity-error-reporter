@@ -5,7 +5,7 @@
   (file-name-directory load-file-name))
 
 
-(defun make-teamcity-test-report (args)
+(defun teamcity-test-report (args)
   (interactive "sargs: ")
   (let* ((default-directory teamcity-test-reporter/wd)
          (command (string-join (append '("lein" "trampoline" "run")
@@ -16,6 +16,6 @@
     (find-file report-path)))
 
 
-(defun make-teamcity-test-report-demo ()
+(defun teamcity-test-report-demo ()
   (interactive)
-  (make-teamcity-test-report ":demo"))
+  (teamcity-test-report ":demo"))

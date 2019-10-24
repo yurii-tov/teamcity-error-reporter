@@ -12,7 +12,7 @@ Tool to aid in selenium tests failures investigation. Fetches all necessary data
  
  1. Clone project and `cd` to its directory
  2. Run emacs and load `report.el` file
- 3. Execute `make-teamcity-test-report-demo` command
+ 3. Execute `teamcity-test-report-demo` command
  You will see a buffer containing report in org-mode
  
 ### Using in production
@@ -21,5 +21,5 @@ Tool to aid in selenium tests failures investigation. Fetches all necessary data
  Set env variable `teamcity.server.url` (for example: `http://my.teamcity.server`)
  
  1. load report.el file into emacs
- 2. Execute `make-teamcity-test-report`
+ 2. Execute `teamcity-test-report`
  3. Pass args, buildTypeId and (optional) specific number or id, e.g. "e5_selenium", or "e5_selenium :number 42"
