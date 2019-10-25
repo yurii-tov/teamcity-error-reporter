@@ -27,6 +27,9 @@
      :errors errors}))
 
 
+(declare format-duration)
+
+
 (defn gen-report-org-mode
   "Consume parsed-log output, fetch artifacts, print org-mode document into file"
   [{{:keys [url number build-type-id status date-start date-finish duration]} :properties errors :errors}]
@@ -50,7 +53,7 @@
                  number
                  (format-date date-start)
                  (format-date date-finish)
-                 (str duration)
+                 (format-duration duration)
                  status                       
                  url))                        
         ;; errors
@@ -122,3 +125,42 @@
                     args))
         parse-log
         gen-report-org-mode)))
+
+
+;; utils
+
+
+(defn parse-duration
+  "Extract amounts of days, hours, minutes and seconds from given Duration instance.
+  Example output is ([1 \"d\"] [4 \"h\"] [43 \"m\"] [12 \"s\"])"
+  ([duration accessors]
+   (when-let [f (first accessors)]
+     (let [[duration-1 units]
+           (f duration)]
+       (cons units (parse-duration
+                    duration-1
+                    (rest accessors))))))
+  ([duration]
+   (let [accessors [#(let [units (.toDays %)]
+                       [(.minusDays % units) units])
+                    #(let [units (.toHours %)]
+                       [(.minusHours % units) units])
+                    #(let [units (.toMinutes %)]
+                       [(.minusMinutes % units) units])
+                    #(let [units (.getSeconds %)]
+                       [(.minusSeconds % units) units])]
+         parsed-raw (parse-duration duration accessors)]
+     (vec (remove
+           (comp zero? first)
+           (map vector
+                parsed-raw
+                (map str "dhms")))))))
+
+
+(defn format-duration
+  "Convert duration into human-readable form"
+  [duration]
+  (cstr/join
+   " "
+   (map (partial apply format "%d%s")
+        (parse-duration duration))))
