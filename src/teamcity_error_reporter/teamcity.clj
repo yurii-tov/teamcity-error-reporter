@@ -3,6 +3,7 @@
   (:require [clojure.xml :as xml]
             [clojure.java.io :as io])
   (:import java.time.OffsetDateTime
+           java.time.Duration
            java.time.format.DateTimeFormatter))
 
 
@@ -47,16 +48,24 @@
   "Extract some properties of given build, e.g. id, number, status message"
   [{{:keys [webUrl id buildTypeId number]} :attrs
     :as build}]
-  (let [{content :content} build
+  (let [parse-date (fn [s] (OffsetDateTime/parse
+                            s
+                            (DateTimeFormatter/ofPattern
+                             "yyyyMMdd'T'HHmmssZ")))
+        {content :content} build
         [{[text] :content}] content
-        {[date-finish] :content} (nth content 4)]
+        [date-start date-finish]
+        (map (fn [i] (let [{[date-raw] :content}
+                           (nth content i)]
+                       (parse-date date-raw)))
+             [3 4])]
     {:url webUrl
      :status text
      :id id
      :build-type-id buildTypeId
-     :date-finish (OffsetDateTime/parse
-                   date-finish
-                   (DateTimeFormatter/ofPattern "yyyyMMdd'T'HHmmssZ"))
+     :date-start date-start
+     :date-finish date-finish
+     :duration (Duration/between date-start date-finish)
      :number number}))
 
 
