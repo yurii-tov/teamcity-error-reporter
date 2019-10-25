@@ -135,26 +135,23 @@
   Example output is ([1 \"d\"] [4 \"h\"] [43 \"m\"] [12 \"s\"])"
   ([duration accessors]
    (when-let [f (first accessors)]
-     (let [[duration-1 units]
-           (f duration)]
-       (cons units (parse-duration
-                    duration-1
-                    (rest accessors))))))
+     (let [[amount units rest-duration] (f duration)
+           parsed (parse-duration
+                   rest-duration
+                   (rest accessors))]
+       (if (zero? amount)
+         parsed
+         (cons [amount units] parsed)))))
   ([duration]
-   (let [accessors [#(let [units (.toDays %)]
-                       [(.minusDays % units) units])
-                    #(let [units (.toHours %)]
-                       [(.minusHours % units) units])
-                    #(let [units (.toMinutes %)]
-                       [(.minusMinutes % units) units])
-                    #(let [units (.getSeconds %)]
-                       [(.minusSeconds % units) units])]
-         parsed-raw (parse-duration duration accessors)]
-     (vec (remove
-           (comp zero? first)
-           (map vector
-                parsed-raw
-                (map str "dhms")))))))
+   (let [accessors [#(let [amount (.toDays %)]
+                       [amount "d" (.minusDays % amount)])
+                    #(let [amount (.toHours %)]
+                       [amount "h" (.minusHours % amount)])
+                    #(let [amount (.toMinutes %)]
+                       [amount "m" (.minusMinutes % amount)])
+                    #(let [amount (.getSeconds %)]
+                       [amount "s" (.minusSeconds % amount)])]]
+     (parse-duration duration accessors))))
 
 
 (defn format-duration
