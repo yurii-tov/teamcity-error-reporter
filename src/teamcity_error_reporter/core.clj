@@ -34,8 +34,9 @@
   "Consume parsed-log output, fetch artifacts, print org-mode document into file"
   [{{:keys [url number build-type-id status date-start date-finish duration]} :properties errors :errors}]
   (let [report-id (let [d (LocalDateTime/now)
-                        f (DateTimeFormatter/ofPattern "yyyyMMdd_HHmmss")]
-                    (.format d f))
+                        f (DateTimeFormatter/ofPattern "yyyyMMdd_HHmmss")
+                        ts (.format d f)]
+                    (format "%s_%s" number ts))
         report-dir (str (System/getenv "tmp") "/" report-id)
         report-file (io/file report-dir "test-report.org")
         format-date (fn [date]
