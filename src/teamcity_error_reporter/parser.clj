@@ -49,7 +49,7 @@
 (defn extract-screenshot-name
   "Try to extract screenshot name from given string, otherwise return nil"
   [string]
-  (second (re-find #"Screenshot taken:.+?[/\\]?([^/\\]+\.png)" string)))
+  (second (re-find #"value='(.+?.png)'" string)))
 
 
 (defn extract-display-name
